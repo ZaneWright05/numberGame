@@ -7,9 +7,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
+import javafx.scene.control.SplitPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 
@@ -28,14 +33,30 @@ public class App extends Application {
     public void start(Stage stage) {
         savedVal = getUserInput();
 
-        TextField numInp = new TextField();
+        //basic struct elements
+        SplitPane splitPane = new SplitPane();
+        VBox leftPane = new VBox();
+        HBox rightPane = new HBox();
+        VBox rightB1 = new VBox();
+        VBox rightB2 = new VBox();
 
+        //defining v&h box properties
+        HBox.setHgrow(rightB1, Priority.ALWAYS);
+        HBox.setHgrow(rightB2, Priority.ALWAYS);
+        rightB1.setSpacing(5);
+        rightB2.setSpacing(5);
+        rightPane.setSpacing(5);
+
+        // add els to v box
+        rightPane.getChildren().addAll(rightB1,rightB2);
+
+        // create left side elements
+        TextField numInp = new TextField();
         Button submit = new Button("Submit");
         submit.setDisable(true);
 
-        var root = new GridPane();
-        root.add(numInp,0,0);
-        root.add(submit,1,0);
+        // add els to left side
+        leftPane.getChildren().addAll(numInp,submit);
 
         numInp.textProperty().addListener((observable, oldValue, newValue) ->{
             submit.setDisable(true);
@@ -52,22 +73,22 @@ public class App extends Application {
         ListView<String> listView0 = new ListView<>();
         oList0 = FXCollections.observableArrayList();
         listView0.setItems(oList0);
-        root.add(listView0,1,1);
 
         ListView<String> listView1 = new ListView<>();
         oList1 = FXCollections.observableArrayList();
         listView1.setItems(oList1);
-        root.add(listView1,2,1);
 
         ListView<String> listView2 = new ListView<>();
         oList2 = FXCollections.observableArrayList();
         listView2.setItems(oList2);
-        root.add(listView2,1,2);
 
         ListView<String> listView3 = new ListView<>();
         oList3 = FXCollections.observableArrayList();
         listView3.setItems(oList3);
-        root.add(listView3,2,2);
+
+        // add lists and labels to given h box
+        rightB1.getChildren().addAll(new Label(" 0 matching"),listView0,new Label(" 2 matching"),listView2);
+        rightB2.getChildren().addAll(new Label(" 1 matching"),listView1,new Label(" 3 matching"),listView3);
 
         submit.setOnAction(actionEvent -> { // what happens when button is pressed
             StringProperty stringProperty = numInp.textProperty();
@@ -86,47 +107,33 @@ public class App extends Application {
                     }
                 }
                 System.out.printf("there are %d matching characters\n", count);
-                switch (count) {
+                switch (count) { // add to relevant display list
                     case 0:
-                        System.out.println("adding to oList0");
-                        if(!oList0.contains(userStr)){ // checking for repeated guesses
-                            oList0.add(userStr);
-                        }
-                        else{
-                            System.out.println("Already in List");
-                        }
+                        checkSameAnswer(oList0,userStr);
                         break;
                     case 1:
-                        System.out.println("adding to oList1");
-                        if(!oList1.contains(userStr)){
-                            oList1.add(userStr);
-                        }
-                        else{
-                            System.out.println("Already in List");
-                        }
+                        checkSameAnswer(oList1,userStr);
                         break;
                     case 2:
-                        System.out.println("adding to oList2");
-                        if(!oList2.contains(userStr)){
-                            oList2.add(userStr);
-                        }
-                        else{
-                            System.out.println("Already in List");
-                        }
+                        checkSameAnswer(oList2,userStr);
                         break;
                     case 3:
-                        System.out.println("adding to oList3");
-                        if(!oList3.contains(userStr)) {
-                            oList3.add(userStr);
-                        }
-                        else{
-                            System.out.println("Already in List");
-                        }
+                        checkSameAnswer(oList3,userStr);
                         break;
                 }
             }
             numInp.clear();
         });
+
+        splitPane.getItems().addAll(leftPane, rightPane);
+        splitPane.setDividerPositions(0.334);
+        leftPane.maxWidthProperty().bind(splitPane.widthProperty().multiply(0.330));
+        rightPane.maxWidthProperty().bind(splitPane.widthProperty().multiply(0.660));
+        //splitPane.setResizableWithParent(rightPane, Boolean.FALSE);
+
+        var root = new BorderPane();
+        root.setStyle("-fx-background-color: grey;");
+        root.setCenter(splitPane);
 
         var scene = new Scene(root, 800, 800);
         stage.setScene(scene);
@@ -145,7 +152,7 @@ public class App extends Application {
             System.out.print("Please enter choice value:\n");
             System.out.print("Restraints: unique digits in range 1 to 9\n");
             String choiceVal = scanner.next();
-            while(!choiceVal.matches("^(?!.*(.).*\\1)[1-9]{0,4}$")){ // checl choice input meets rules
+            while(!choiceVal.matches("^(?!.*(.).*\\1)[1-9]{0,4}$")){ // check choice input meets rules
                 System.out.print("Please enter value matching restraints:\n");
                 System.out.print("Restraints: unique digits in range 1 to 9\n");
                 choiceVal = scanner.next();
@@ -155,4 +162,15 @@ public class App extends Application {
         System.out.print("Default value in use.\n");
         return savedVal; // use the system value
     }
+
+    public void checkSameAnswer(ObservableList<String> oList, String userInp){
+        // checks if given oList contains given value avoids multiple guesses of same number
+        if(oList.contains(userInp)){
+            System.out.println("Already in List");
+        }
+        else{
+            oList.add(userInp);
+        }
+    }
+
 }
