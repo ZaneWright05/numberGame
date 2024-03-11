@@ -1,6 +1,9 @@
 package uk.ac.soton.comp1206;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
+import java.util.function.DoubleToLongFunction;
 import javafx.application.Application;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -9,12 +12,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
 
@@ -55,9 +61,23 @@ public class App extends Application {
         Button submit = new Button("Submit");
         submit.setDisable(true);
 
-        // add els to left side
-        leftPane.getChildren().addAll(numInp,submit);
+        // instantiate 2d arr for unused values
+        String[][] arrOfArr = new String[9][4];
+        for (int row = 0; row < 9; row++){
+            for (int col = 0; col < 4; col++) {
+                arrOfArr[row][col] = String.valueOf(row+1);
+            }
+        }
 
+        // create text for chosen val display
+        String arrayAsStr = arr2dAsString(9, arrOfArr);
+        Text text = new Text(arrayAsStr);
+        TextFlow textFlow = new TextFlow(text);
+
+        // add els to left side
+        leftPane.getChildren().addAll(numInp,submit,textFlow);
+
+        // listener for the number input
         numInp.textProperty().addListener((observable, oldValue, newValue) ->{
             submit.setDisable(true);
             if (!newValue.matches("^(?!.*(.).*\\1)[1-9]{0,4}$")) {
@@ -96,7 +116,7 @@ public class App extends Application {
             userStr= userStr.trim();
             int userVal = Integer.parseInt(userStr); // formatting the user input
             if(savedVal ==  userVal){
-                System.out.println("match!!!");
+                System.out.println("Match!!!");
             }
             else {
                 String ansStr = String.valueOf(savedVal); // finding all matching characters
@@ -171,6 +191,16 @@ public class App extends Application {
         else{
             oList.add(userInp);
         }
+    }
+
+    // convert a 2d array into values
+    public String arr2dAsString(int rows, String[][] array){
+        String out = "";
+        for (int row = 0; row < rows; row++){
+                String[] tempArr = array[row];
+                out = out + String.format(String.join(" ", tempArr) + "\n");
+        }
+        return out;
     }
 
 }
