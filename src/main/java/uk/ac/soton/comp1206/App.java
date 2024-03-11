@@ -1,9 +1,6 @@
 package uk.ac.soton.comp1206;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
-import java.util.function.DoubleToLongFunction;
 import javafx.application.Application;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -12,7 +9,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
@@ -35,6 +31,7 @@ public class App extends Application {
     private ObservableList<String> oList1;
     private ObservableList<String> oList2;
     private ObservableList<String> oList3;
+    private String[][] arrOfArr;
 
     public void start(Stage stage) {
         savedVal = getUserInput();
@@ -62,7 +59,7 @@ public class App extends Application {
         submit.setDisable(true);
 
         // instantiate 2d arr for unused values
-        String[][] arrOfArr = new String[9][4];
+        arrOfArr = new String[9][4];
         for (int row = 0; row < 9; row++){
             for (int col = 0; col < 4; col++) {
                 arrOfArr[row][col] = String.valueOf(row+1);
@@ -130,6 +127,8 @@ public class App extends Application {
                 switch (count) { // add to relevant display list
                     case 0:
                         checkSameAnswer(oList0,userStr);
+                        updateArr(userStr);
+                        text.setText(arr2dAsString(9,arrOfArr));
                         break;
                     case 1:
                         checkSameAnswer(oList1,userStr);
@@ -146,10 +145,11 @@ public class App extends Application {
         });
 
         splitPane.getItems().addAll(leftPane, rightPane);
+
+        // fix split plane
         splitPane.setDividerPositions(0.334);
         leftPane.maxWidthProperty().bind(splitPane.widthProperty().multiply(0.330));
         rightPane.maxWidthProperty().bind(splitPane.widthProperty().multiply(0.660));
-        //splitPane.setResizableWithParent(rightPane, Boolean.FALSE);
 
         var root = new BorderPane();
         root.setStyle("-fx-background-color: grey;");
@@ -203,4 +203,13 @@ public class App extends Application {
         return out;
     }
 
+    // version of updateArr for when no matching els are found, finds location and replaces with /
+    public void updateArr(String usrStr){
+        // called when no matching values given only
+        for (int col = 0; col < 4; col++) {
+            int curVal = Character.getNumericValue(usrStr.charAt(col));
+            //System.out.println(curVal);
+            arrOfArr[curVal-1][col] = "/";
+        }
+    }
 }
