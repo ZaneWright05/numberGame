@@ -1,7 +1,6 @@
 package uk.ac.soton.comp1206;
 
-import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Scanner;
 import javafx.application.Application;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -26,8 +25,9 @@ public class App extends Application {
     private ObservableList<String> oList2;
     private ObservableList<String> oList3;
 
-
     public void start(Stage stage) {
+        savedVal = getUserInput();
+
         TextField numInp = new TextField();
 
         Button submit = new Button("Submit");
@@ -89,7 +89,7 @@ public class App extends Application {
                 switch (count) {
                     case 0:
                         System.out.println("adding to oList0");
-                        if(!oList0.contains(userStr)){
+                        if(!oList0.contains(userStr)){ // checking for repeated guesses
                             oList0.add(userStr);
                         }
                         else{
@@ -138,4 +138,21 @@ public class App extends Application {
         launch();
     }
 
+    public int getUserInput(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Custom value?(Y/N)\n");
+        if(scanner.next().equalsIgnoreCase("Y")) {
+            System.out.print("Please enter choice value:\n");
+            System.out.print("Restraints: unique digits in range 1 to 9\n");
+            String choiceVal = scanner.next();
+            while(!choiceVal.matches("^(?!.*(.).*\\1)[1-9]{0,4}$")){ // checl choice input meets rules
+                System.out.print("Please enter value matching restraints:\n");
+                System.out.print("Restraints: unique digits in range 1 to 9\n");
+                choiceVal = scanner.next();
+            }
+            return Integer.parseInt(choiceVal);
+        }
+        System.out.print("Default value in use.\n");
+        return savedVal; // use the system value
+    }
 }
