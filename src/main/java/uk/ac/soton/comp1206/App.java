@@ -3,19 +3,28 @@ package uk.ac.soton.comp1206;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import uk.ac.soton.comp1206.ui.GameWindow;
+import uk.ac.soton.comp1206.ui.LaunchWindow;
 
 public class App extends Application {
     private Stage stage;
 
     public void start(Stage stage) throws Exception {
         this.stage = stage;
-        launchApp();
+        launchStart();
+        //launchMain();
     }
     public static void main(String[] args) {
         launch();
     }
 
-    public void launchApp(){
+    public void launchStart() {
+        var window = new LaunchWindow(this);
+        stage.setScene(window.getScene());
+        stage.show();
+        stage.centerOnScreen();
+    }
+
+    public void launchMain(){
         var window = new GameWindow(this);
         stage.setScene(window.getScene());
         stage.show();

@@ -1,6 +1,5 @@
 package uk.ac.soton.comp1206.ui;
 
-import java.util.Scanner;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -22,15 +21,15 @@ import org.apache.logging.log4j.Logger;
 public class GameWindow {
 
 
-  private static final Logger logger = (Logger) LogManager.getLogger(GameWindow.class);
-  private Scene scene;
-  private int savedVal = 1234;
+  private static final Logger logger = LogManager.getLogger(GameWindow.class);
+  private final Scene scene;
+  private final int savedVal = 1234;
 
-  private ObservableList<String> oList0;
-  private ObservableList<String> oList1;
-  private ObservableList<String> oList2;
-  private ObservableList<String> oList3;
-  private String[][] arrOfArr;
+  private final ObservableList<String> oList0;
+  private final ObservableList<String> oList1;
+  private final ObservableList<String> oList2;
+  private final ObservableList<String> oList3;
+  private final String[][] arrOfArr;
 
   public GameWindow(App app){
     var root = new BorderPane();
@@ -54,8 +53,9 @@ public class GameWindow {
     rightPane.getChildren().addAll(rightB1,rightB2);
 
     // create left side elements
-    TextField numInp = new TextField();
     Button submit = new Button("Submit");
+    TextField numInp = new NumInpField(submit); // create personal made input
+    //-> has event listener for my input and if correct input given will enable the parsed in button
     submit.setDisable(true);
 
     // instantiate 2d arr for unused values
@@ -73,18 +73,6 @@ public class GameWindow {
 
     // add els to left side
     leftPane.getChildren().addAll(numInp,submit,textFlow);
-
-    // listener for the number input
-    numInp.textProperty().addListener((observable, oldValue, newValue) ->{
-      submit.setDisable(true);
-      if (!newValue.matches("^(?!.*(.).*\\1)[1-9]{0,4}$")) {
-        numInp.setText(oldValue);
-        newValue = oldValue;
-      }
-      if(newValue.length() == 4){
-        submit.setDisable(false);
-      }
-    });
 
     // create the lists
     ListView<String> listView0 = new ListView<>();
@@ -156,27 +144,6 @@ public class GameWindow {
     scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm()); // style sheet to remove highlighting
 
   }
-
-public int getUserInput(){
-  Scanner scanner = new Scanner(System.in);
-  System.out.print("Custom value?(Y/N)\n");
-
-  if(scanner.next().equalsIgnoreCase("Y")) {
-    System.out.print("Please enter choice value:\n");
-    System.out.print("Restraints: unique digits in range 1 to 9\n");
-    String choiceVal = scanner.next();
-
-    while(!choiceVal.matches("^(?!.*(.).*\\1)[1-9]{0,4}$")){ // check choice input meets rules
-      System.out.print("Please enter value matching restraints:\n");
-      System.out.print("Restraints: unique digits in range 1 to 9\n");
-      choiceVal = scanner.next();
-    }
-    return Integer.parseInt(choiceVal);
-  }
-
-  System.out.print("Default value in use.\n");
-  return savedVal; // use the system value
-}
 
   public void checkSameAnswer(ObservableList<String> oList, String userInp){
     // checks if given oList contains given value avoids multiple guesses of same number
