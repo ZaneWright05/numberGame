@@ -23,7 +23,7 @@ public class GameWindow {
 
   private static final Logger logger = LogManager.getLogger(GameWindow.class);
   private final Scene scene;
-  private final int savedVal = 1234;
+  private final int savedVal;
 
   private final ObservableList<String> oList0;
   private final ObservableList<String> oList1;
@@ -32,6 +32,7 @@ public class GameWindow {
   private final String[][] arrOfArr;
 
   public GameWindow(App app){
+    savedVal = app.getSavedVal();
     var root = new BorderPane();
     this.scene = new Scene(root, 800, 800);
 
@@ -120,12 +121,18 @@ public class GameWindow {
             break;
           case 1:
             checkSameAnswer(oList1,userStr);
+            updateArr(userStr,"*");
+            text.setText(arr2dAsString(9,arrOfArr));
             break;
           case 2:
             checkSameAnswer(oList2,userStr);
+            updateArr(userStr,"*");
+            text.setText(arr2dAsString(9,arrOfArr));
             break;
           case 3:
+            updateArr(userStr,"*");
             checkSameAnswer(oList3,userStr);
+            text.setText(arr2dAsString(9,arrOfArr));
             break;
         }
       }
@@ -157,12 +164,12 @@ public class GameWindow {
 
   // convert a 2d array into values
   public String arr2dAsString(int rows, String[][] array){
-    String out = "";
+    StringBuilder out = new StringBuilder();
     for (int row = 0; row < rows; row++){
       String[] tempArr = array[row];
-      out = out + String.format(String.join(" ", tempArr) + "\n");
+      out.append(String.format(String.join(" ", tempArr) + "\n"));
     }
-    return out;
+    return out.toString();
   }
 
   // version of updateArr for when no matching els are found, finds location and replaces with /
@@ -172,6 +179,20 @@ public class GameWindow {
       int curVal = Character.getNumericValue(usrStr.charAt(col));
       //System.out.println(curVal);
       arrOfArr[curVal-1][col] = "X";
+    }
+  }
+
+  public void updateArr(String usrStr, String ins){ // works but is rough
+    // called when no matching values given only
+    for (int col = 0; col < 4; col++) {
+      int curVal = Character.getNumericValue(usrStr.charAt(col));
+      String val = arrOfArr[curVal-1][col];
+      if(!val.equals("X")) {
+        if(!val.contains(ins)) {
+          arrOfArr[curVal-1][col] = ins + curVal;
+        }
+      }
+      //System.out.println(curVal);
     }
   }
 

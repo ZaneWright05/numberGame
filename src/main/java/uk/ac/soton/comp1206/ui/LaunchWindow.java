@@ -16,11 +16,18 @@ public class LaunchWindow {
     var root = new VBox();
     this.scene = new Scene(root, 800, 800);
     Button begin = new Button("Begin");
+    begin.setDisable(true);
     TextField input = new NumInpField(begin);
     root.getChildren().addAll(new Label("Enter number - unique digits [1-9]"),input,begin);
+
+    begin.setOnAction(actionEvent -> {
+      app.setSavedVal(Integer.parseInt(input.getText()));
+      app.launchMain();
+    });
   }
 
   public Scene getScene() {
     return scene;
   }
+
 }

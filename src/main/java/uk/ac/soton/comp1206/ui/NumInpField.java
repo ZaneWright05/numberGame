@@ -10,6 +10,7 @@ public class NumInpField extends TextField {
   // unique text field that takes only valid inputs
   public NumInpField(Button submit){
     this.textProperty().addListener((observable, oldValue, newValue) ->{
+      submit.setDisable(true);
       if (!newValue.matches("^(?!.*(.).*\\1)[1-9]{0,4}$")) {
         this.setText(oldValue);
         newValue = oldValue;
